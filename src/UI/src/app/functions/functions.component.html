@@ -1,0 +1,24 @@
+
+<button type=button class="btn btn-default btn-lg"  (click)="turnOffClick()">
+        <span class="glyphicon glyphicon-off" style="font-size: 25px" aria-hidden=true></span>
+</button> 
+<button *ngIf="state.MovieState=='stopped' || state.MovieState=='paused'" type=button [disabled]="(entry == null || entry.EntryType != 2) && state.MovieTitle==''" class="btn btn-default btn-lg" (click)="playClick()">
+    <span class="glyphicon glyphicon-play-circle" style="font-size: 25px" aria-hidden=true></span>
+</button> 
+
+<button *ngIf="state.MovieState=='playing'" type=button class="btn btn-default btn-lg" (click)="pauseClick()">
+    <span class="glyphicon glyphicon-pause" style="font-size: 25px" aria-hidden=true></span>
+</button> 
+
+<button type=button [disabled]="state.MovieTitle==''" class="btn btn-default btn-lg" (click)="backwardClick()">
+    <span class="glyphicon glyphicon-backward" style="font-size: 25px" aria-hidden=true></span>
+</button> 
+
+<button type=button [disabled]="state.MovieTitle==''" class="btn btn-default btn-lg" (click)="forwardClick()">
+    <span class="glyphicon glyphicon-forward" style="font-size: 25px" aria-hidden=true></span>
+</button> 
+<button type=button class="btn btn-default btn-lg" (click)="stopClick()">
+    <span class="glyphicon glyphicon-stop" style="font-size: 25px" aria-hidden=true></span>
+</button> 
+
+

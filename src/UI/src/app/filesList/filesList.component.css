@@ -1,0 +1,6 @@
+@import "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css";
+@import "~bootstrap/dist/css/bootstrap.css";
+
+.selected{
+    background: coral
+}

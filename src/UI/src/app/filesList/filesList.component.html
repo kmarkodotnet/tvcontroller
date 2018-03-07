@@ -1,0 +1,63 @@
+<div >
+
+    <mat-card><h1>{{entriesData.EntryPath}}</h1></mat-card>
+     
+    <!-- <ul style="overflow: auto; max-height: 70vh;">
+        <li *ngFor="let entity of entriesData.Entries" style="list-style-type: none;">
+            <div >
+                <span style="color: blue" *ngIf="entity.EntryType==0" class="glyphicon glyphicon-folder-open"></span>
+                <span style="color: brown" *ngIf="entity.EntryType==1" class="glyphicon glyphicon-folder-open"></span>
+                <span style="color: darkblue" *ngIf="entity.EntryType==2" class="glyphicon glyphicon-film"></span>
+                <span style="color: darkgreen" *ngIf="entity.EntryType==3" class="glyphicon glyphicon-subtitles"></span>
+                <span style="color: darkgray" *ngIf="entity.EntryType==4" class="glyphicon glyphicon-file"></span>
+                <div *ngIf="entity.Extension==''" class="mx-5"> {{entity.Name}} </div>
+                <div *ngIf="entity.Extension!=''" class="mx-5"> {{entity.Name}}{{entity.Extension}} </div>
+            </div>
+        </li>
+
+    </ul> -->
+     
+    <mat-list  style="overflow: auto; max-height: 60vh;">
+        <mat-list-item class="list-group-item container-fluid" *ngFor="let entity of entriesData.Entries" [class.selected]="entity===selected" (click)="onRowClicked(entity)">
+            <div >
+                <span style="color: blue" *ngIf="entity.EntryType==0" class="glyphicon glyphicon-folder-open"></span>
+                <span style="color: brown" *ngIf="entity.EntryType==1" class="glyphicon glyphicon-folder-open"></span>
+                <span style="color: darkblue" *ngIf="entity.EntryType==2" class="glyphicon glyphicon-film"></span>
+                <span style="color: darkgreen" *ngIf="entity.EntryType==3" class="glyphicon glyphicon-subtitles"></span>
+                <span style="color: darkgray" *ngIf="entity.EntryType==4" class="glyphicon glyphicon-file"></span>
+                <div *ngIf="entity.Extension==''" class="mx-5"> {{entity.Name}} </div>
+                <div *ngIf="entity.Extension!=''" class="mx-5"> {{entity.Name}}{{entity.Extension}} </div>
+            </div>
+        </mat-list-item>
+    </mat-list>
+
+    <!-- <mat-selection-list #entries style="overflow: scroll">
+            
+            
+        <mat-list-option  [disabled]=
+            "(
+                entries.selectedOptions.selected.length == 2 
+                && entries.selectedOptions.selected[0].value.FullName != entity.FullName 
+                && entries.selectedOptions.selected[1].value.FullName != entity.FullName
+            )
+            || (entries.selectedOptions.selected.length == 1 
+                &&
+                (
+                    (entries.selectedOptions.selected[0].value.EntryType == 3 && entity.EntryType != 2)
+                    || (entries.selectedOptions.selected[0].value.EntryType == 2 && entity.EntryType != 3)
+                )
+                && entries.selectedOptions.selected[0].value.FullName != entity.FullName 
+            )"
+            [value]="entity" [selected]="entity.selected"  class="list-group-item container-fluid" *ngFor="let entity of entriesData.Entries" [class.selected]="entity===selected && entity.EntryType==2" (click)="onRowClicked(entity)">
+                <div >
+                    <span style="color: blue" *ngIf="entity.EntryType==0" class="glyphicon glyphicon-folder-open"></span>
+                    <span style="color: brown" *ngIf="entity.EntryType==1" class="glyphicon glyphicon-folder-open"></span>
+                    <span style="color: darkblue" *ngIf="entity.EntryType==2" class="glyphicon glyphicon-film"></span>
+                    <span style="color: darkgreen" *ngIf="entity.EntryType==3" class="glyphicon glyphicon-subtitles"></span>
+                    <span style="color: darkgray" *ngIf="entity.EntryType==4" class="glyphicon glyphicon-file"></span>
+                    <div *ngIf="entity.Extension==''" class="mx-5"> {{entity.Name}} </div>
+                    <div *ngIf="entity.Extension!=''" class="mx-5"> {{entity.Name}}{{entity.Extension}} </div>
+                </div>
+        </mat-list-option>
+    </mat-selection-list> -->
+</div>

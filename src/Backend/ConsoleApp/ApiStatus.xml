@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<root>
+
+  <fullscreen>false</fullscreen>
+  <aspectratio>default</aspectratio>
+  <audiodelay>0</audiodelay>
+  <apiversion>3</apiversion>
+  <currentplid>4</currentplid>
+  <time>722</time>
+  <volume>474</volume>
+  <length>3089</length>
+  <random>false</random>
+  <audiofilters>
+    <filter_0></filter_0>
+  </audiofilters>
+  <rate>1</rate>
+  <videoeffects>
+    <hue>0</hue>
+    <saturation>1</saturation>
+    <contrast>1</contrast>
+    <brightness>1</brightness>
+    <gamma>1</gamma>
+  </videoeffects>
+  <state>playing</state>
+  <loop>true</loop>
+  <version>2.2.6 Umbrella</version>
+  <position>0.23392482101917</position>
+  <repeat>false</repeat>
+  <subtitledelay>0</subtitledelay>
+  <equalizer></equalizer>
+  <information>
+    <category name="meta">
+      <info name='showName'>Homeland</info>
+      <info name='filename'>Homeland.S05E05.HDTV.x264-FLEET.mp4</info>
+      <info name='title'>Homeland S05E05</info>
+      <info name='episodeNumber'>05</info>
+      <info name='seasonNumber'>05</info>
+    </category>
+    <category name='1. műsor'>
+      <info name='Mintavételi frekvencia'>48000 Hz</info>
+      <info name='Csatornák'>Sztereó</info>
+      <info name='Kodek'>MPEG AAC Audio (mp4a)</info>
+      <info name='Típus'>Hang</info>
+    </category>
+    <category name='0. műsor'>
+      <info name='Képernyő felbontása'>720x404</info>
+      <info name='Kodek'>H264 - MPEG-4 AVC (part 10) (avc1)</info>
+      <info name='Típus'>Videó</info>
+      <info name='Dekódolt formátum'>Planar 4:2:0 YUV</info>
+      <info name='Képkockasebesség'>23.976023</info>
+      <info name='Felbontás'>720x418</info>
+    </category>
+  </information>
+  <stats>
+    <lostabuffers>0</lostabuffers>
+    <readpackets>8017</readpackets>
+    <lostpictures>1</lostpictures>
+    <demuxreadbytes>30805882</demuxreadbytes>
+    <demuxbitrate>0.050718564540148</demuxbitrate>
+    <playedabuffers>14213</playedabuffers>
+    <demuxcorrupted>0</demuxcorrupted>
+    <sendbitrate>0</sendbitrate>
+    <sentbytes>0</sentbytes>
+    <displayedpictures>7256</displayedpictures>
+    <demuxreadpackets>0</demuxreadpackets>
+    <sentpackets>0</sentpackets>
+    <inputbitrate>0.054288443177938</inputbitrate>
+    <demuxdiscontinuity>0</demuxdiscontinuity>
+    <averagedemuxbitrate>0</averagedemuxbitrate>
+    <decodedvideo>7268</decodedvideo>
+    <averageinputbitrate>0</averageinputbitrate>
+    <readbytes>35457206</readbytes>
+    <decodedaudio>14214</decodedaudio>
+  </stats>
+</root>

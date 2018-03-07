@@ -1,0 +1,28 @@
+
+<!-- <div>
+    <mat-grid-list cols="1" rowHeight="4:1">
+        <mat-grid-tile colspan="1" rowspan="1">
+            <functions 
+            
+            [entry]="selectedEntry"
+            ></functions>
+        </mat-grid-tile>
+        <mat-grid-tile colspan="1" rowspan="5" >
+            <filesList 
+            [(selected)]="selectedEntry"
+            ></filesList>
+        </mat-grid-tile>
+      </mat-grid-list>
+</div> -->
+
+<div  style="height: 100%!important;">
+    <div style="float:top;max-height:80%; height: 80%!important;position: absolute;top: 8px; overflow: clipped">
+        <filesList [(selected)]="selectedEntry"></filesList>   
+    </div>
+    <div style="float:bottom;max-height:10%;height: 10%!important;position: absolute;bottom: 0px;">
+        <functions [entry]="selectedEntry"></functions>
+    </div>
+    <div style="clear:both"></div>
+</div>
+         
+
