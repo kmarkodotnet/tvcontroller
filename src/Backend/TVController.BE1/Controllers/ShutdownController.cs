@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using TVController.BE1.Helpers;
 
 namespace TVController.BE1.Controllers
 {
@@ -14,13 +15,16 @@ namespace TVController.BE1.Controllers
         [Route("")]
         public void Index()
         {
-            using (EventLog eventLog = new EventLog("Application"))
+            var ip = Request.UserHostAddress;
+            try
             {
-                var ip = Request.UserHostAddress;
-                eventLog.Source = "TVController";
-                eventLog.WriteEntry(string.Format("IP: {0}", ip), EventLogEntryType.Information, 101, 1);
+                EventLogger.LogMessage(string.Format("IP: {0}", ip));
+                Process.Start("shutdown", "/s /t 0");
             }
-            Process.Start("shutdown", "/s /t 0");
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(string.Format("IP: {0}, Ex: ", ip, ex.ToString()));
+            }
         }
     }
 }

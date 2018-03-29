@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 //using System.Web.Mvc;
 using System.Xml;
+using TVController.BE1.Helpers;
 using TVController.BE1.Models;
 
 namespace TVController.BE1.Controllers
@@ -60,32 +61,42 @@ namespace TVController.BE1.Controllers
         [HttpGet]
         public EntriesData ListEntries(string requestDir = null)
         {
-            if (string.IsNullOrEmpty(requestDir))
+            EventLogger.LogMessage(string.Format("requestDir: {0}", requestDir));
+            try
             {
-                requestDir = GetLastPath();
-            }
-            if (System.IO.Directory.Exists(requestDir))
-            {
-                var dirs = System.IO.Directory.GetDirectories(requestDir);
-                var files = System.IO.Directory.GetFiles(requestDir);
-                var parent = System.IO.Directory.GetParent(requestDir);
-
-                var entriesData = new EntriesData();
-                entriesData.EntryPath = requestDir;
-                entriesData.Entries = new System.Collections.Generic.List<Entry>();
-
-                entriesData.Entries.Add(new Entry { EntryType = EntryType.Parent, Extension = "", Name = "..", FullName = parent.FullName });
-                dirs.ToList().ForEach(d => entriesData.Entries.Add(new Entry { EntryType = EntryType.Directory, Extension = "", FullName = d, Name = System.IO.Path.GetFileName(d) }));
-                files.ToList().ForEach(f => entriesData.Entries.Add(new Entry
+                if (string.IsNullOrEmpty(requestDir))
                 {
-                    EntryType = GetEntryTypeByName(f),
-                    Extension = System.IO.Path.GetExtension(f),
-                    Name = System.IO.Path.GetFileNameWithoutExtension(f),
-                    FullName = f
+                    requestDir = GetLastPath();
+                    EventLogger.LogMessage(string.Format("GetLastPath(): {0}", requestDir));
                 }
-                ));
-                SetLastPath(requestDir);
-                return entriesData;
+                if (System.IO.Directory.Exists(requestDir))
+                {
+                    var dirs = System.IO.Directory.GetDirectories(requestDir);
+                    var files = System.IO.Directory.GetFiles(requestDir);
+                    var parent = System.IO.Directory.GetParent(requestDir);
+
+                    var entriesData = new EntriesData();
+                    entriesData.EntryPath = requestDir;
+                    entriesData.Entries = new System.Collections.Generic.List<Entry>();
+
+                    entriesData.Entries.Add(new Entry { EntryType = EntryType.Parent, Extension = "", Name = "..", FullName = parent.FullName });
+                    dirs.ToList().ForEach(d => entriesData.Entries.Add(new Entry { EntryType = EntryType.Directory, Extension = "", FullName = d, Name = System.IO.Path.GetFileName(d) }));
+                    files.ToList().ForEach(f => entriesData.Entries.Add(new Entry
+                    {
+                        EntryType = GetEntryTypeByName(f),
+                        Extension = System.IO.Path.GetExtension(f),
+                        Name = System.IO.Path.GetFileNameWithoutExtension(f),
+                        FullName = f
+                    }
+                    ));
+                    SetLastPath(requestDir);
+                    return entriesData;
+                }
+            }
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                throw;
             }
             return null;
         }
@@ -102,81 +113,153 @@ namespace TVController.BE1.Controllers
         public async Task<State> GetState()
         {
             System.Threading.Thread.Sleep(100);
-            var s = await Status();
             var xs = new State();
 
-            try { xs.Volume = int.Parse(GetStatusByNodeName(s, "volume")); } catch (Exception){}
-            try { xs.Time = int.Parse(GetStatusByNodeName(s, "time")); } catch (Exception) { }
-            try { xs.Length = int.Parse(GetStatusByNodeName(s, "length")); } catch (Exception) { }
-            try { xs.MovieState = GetStatusByNodeName(s, "state"); } catch (Exception) { }
-            try { xs.Fullscreen = bool.Parse(GetStatusByNodeName(s, "fullscreen")); } catch (Exception) { }
-            try { xs.MovieTitle = GetStatusByNodeName(s, "info", "filename"); } catch (Exception) { }
+            try
+            {
+                EventLogger.LogMessage("GetState()");
+                var s = await Status();
+                try { xs.Volume = int.Parse(GetStatusByNodeName(s, "volume")); } catch (Exception) { }
+                try { xs.Time = int.Parse(GetStatusByNodeName(s, "time")); } catch (Exception) { }
+                try { xs.Length = int.Parse(GetStatusByNodeName(s, "length")); } catch (Exception) { }
+                try { xs.MovieState = GetStatusByNodeName(s, "state"); } catch (Exception) { }
+                try { xs.Fullscreen = bool.Parse(GetStatusByNodeName(s, "fullscreen")); } catch (Exception) { }
+                try { xs.MovieTitle = GetStatusByNodeName(s, "info", "filename"); } catch (Exception) { }
+
+                return xs;
+            }
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return xs;
+            }
             
-            return xs;
         }
 
         [HttpGet]
         public async Task<State> Play(string moviePath, string subtitlePath)
         {
-            //http://localhost:8081/requests/status.xml?command=in_play&input=G:\Filmek\xxx\Homeland.S05.HDTV.x264-MIXGROUP\Homeland.S05E02.HDTV.x264-FLEET.mp4
-            //var state = await GetPlayState();
-            var resp = await VlcApiCommand(string.Format("?command=in_play&input={0}",moviePath));
-            resp = await VlcApiCommand("?command=fullscreen");
-            var state = await GetState();
-            if (!state.Fullscreen)
+            try
             {
+                EventLogger.LogMessage(string.Format("Play(), moviePath: {0}, subtitlePath: {1}", moviePath, subtitlePath));
+
+                //http://localhost:8081/requests/status.xml?command=in_play&input=G:\Filmek\xxx\Homeland.S05.HDTV.x264-MIXGROUP\Homeland.S05E02.HDTV.x264-FLEET.mp4
+                //var state = await GetPlayState();
+                var resp = await VlcApiCommand(string.Format("?command=in_play&input={0}",moviePath));
                 resp = await VlcApiCommand("?command=fullscreen");
+                var state = await GetState();
+                if (!state.Fullscreen)
+                {
+                    resp = await VlcApiCommand("?command=fullscreen");
+                }
+                return state;
+
             }
-            return state;
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return await GetState();
+            }
         }
 
         [HttpGet]
         public async Task<State> Continue()
         {
-            var resp = await VlcApiCommand(string.Format("?command=pl_play"));
-            var state = await GetState();
-            if (!state.Fullscreen)
+            try
             {
-                resp = await VlcApiCommand("?command=fullscreen");
+                EventLogger.LogMessage(string.Format("Continue()"));
+
+                var resp = await VlcApiCommand(string.Format("?command=pl_play"));
+                var state = await GetState();
+                if (!state.Fullscreen)
+                {
+                    resp = await VlcApiCommand("?command=fullscreen");
+                }
+                return state;
             }
-            return state;
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return await GetState();
+            }
         }
 
         [HttpGet]
         public async Task<State> Pause()
         {
-            var resp = await VlcApiCommand("?command=pl_pause");
-            return await GetState();
+            try
+            {
+                EventLogger.LogMessage(string.Format("Pause()"));
+
+                var resp = await VlcApiCommand("?command=pl_pause");
+                return await GetState();
+            }
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return await GetState();
+            }
         }
 
         [HttpGet]
         public async Task<State> Forward()
         {
-            var l = await Length();
-            var t = await GetTime();
-            int onePercent = l / 100;
-            var resp = await VlcApiCommand(string.Format("?command=seek&val={0}",t+onePercent <= l ? t + onePercent : l));
-            return await GetState();
+            try
+            {
+                EventLogger.LogMessage(string.Format("Forward()"));
+
+                var l = await Length();
+                var t = await GetTime();
+                int onePercent = l / 100;
+                var resp = await VlcApiCommand(string.Format("?command=seek&val={0}",t+onePercent <= l ? t + onePercent : l));
+                return await GetState();
+            }
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return await GetState();
+            }
         }
+    
 
         [HttpGet]
         public async Task<State> Backward()
         {
-            var l = await Length();
-            var t = await GetTime();
-            int onePercent = l / 100;
-            var resp = await VlcApiCommand(string.Format("?command=seek&val={0}", t - onePercent >= 0 ? t - onePercent : 0));
-            return await GetState();
+            try
+            {
+                EventLogger.LogMessage(string.Format("Backward()"));
+
+                var l = await Length();
+                var t = await GetTime();
+                int onePercent = l / 100;
+                var resp = await VlcApiCommand(string.Format("?command=seek&val={0}", t - onePercent >= 0 ? t - onePercent : 0));
+                return await GetState();
+            }
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return await GetState();
+            }
         }
 
         [HttpGet]
         public async Task<State> Stop()
         {
-            var resp = await VlcApiCommand("?command=pl_stop");
-            var state = await GetState();
-            state.MovieState = "stopped";
-            state.MovieTitle = null;
-            return state;
+            try
+            {
+                EventLogger.LogMessage(string.Format("Stop()"));
+
+                var resp = await VlcApiCommand("?command=pl_stop");
+                var state = await GetState();
+                state.MovieState = "stopped";
+                state.MovieTitle = null;
+                return state;
+            }
+            catch (Exception ex)
+            {
+                EventLogger.LogExpetion(ex);
+                return await GetState();
+            }
         }
                 
         private async Task<int> GetTime()
