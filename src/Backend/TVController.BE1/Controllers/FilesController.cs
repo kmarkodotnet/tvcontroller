@@ -59,14 +59,39 @@ namespace TVController.BE1.Controllers
         XmlDocument doc = new XmlDocument();
 
         [HttpGet]
-        public EntriesData ListEntries(string requestDir = null)
+        public async Task<EntriesData> ListEntries(string requestDir = null)
         {
             EventLogger.LogMessage(string.Format("requestDir: {0}", requestDir));
             try
             {
+                
                 if (string.IsNullOrEmpty(requestDir))
                 {
-                    requestDir = GetLastPath();
+                    var s = await GetState();
+                    if (!string.IsNullOrEmpty(s.MovieTitle))
+                    {
+                        var lastPath = GetLastPath();
+                        var allDrives = System.IO.DriveInfo.GetDrives().Select(d => d.Name);
+
+                        int i = 0;
+                        string[] filesInLastPath = null;
+                        while ((filesInLastPath == null || !filesInLastPath.Any()) && i < 3 && !allDrives.Contains(lastPath))
+                        {
+                            filesInLastPath = System.IO.Directory.GetFiles(lastPath, s.MovieTitle, System.IO.SearchOption.AllDirectories);
+                            lastPath = System.IO.Directory.GetParent(lastPath).FullName;
+                            i++;
+                        }
+                        var fullPath = filesInLastPath.FirstOrDefault();
+                        if (!string.IsNullOrEmpty(fullPath))
+                        {
+                            requestDir = System.IO.Path.GetDirectoryName(fullPath);
+                        }
+
+                    }
+                    if (string.IsNullOrEmpty(requestDir))
+                    {
+                        requestDir = GetLastPath();
+                    }
                     EventLogger.LogMessage(string.Format("GetLastPath(): {0}", requestDir));
                 }
                 if (System.IO.Directory.Exists(requestDir))
