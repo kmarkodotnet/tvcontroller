@@ -171,6 +171,14 @@ namespace TVController.BE1.Controllers
                 //http://localhost:8081/requests/status.xml?command=in_play&input=G:\Filmek\xxx\Homeland.S05.HDTV.x264-MIXGROUP\Homeland.S05E02.HDTV.x264-FLEET.mp4
                 //var state = await GetPlayState();
                 var resp = await VlcApiCommand(string.Format("?command=in_play&input={0}",moviePath));
+
+                string subtitle = GetSubtitle(moviePath);
+                if (!string.IsNullOrEmpty(subtitle))
+                {
+                    resp = await VlcApiCommand(string.Format("?command=addsubtitle&val={0}", subtitle));
+                    EventLogger.LogMessage(string.Format("Play(), subtitlePath: {0}", subtitle));
+                }
+
                 resp = await VlcApiCommand("?command=fullscreen");
                 var state = await GetState();
                 if (!state.Fullscreen)
@@ -185,6 +193,15 @@ namespace TVController.BE1.Controllers
                 EventLogger.LogExpetion(ex);
                 return await GetState();
             }
+        }
+
+        private string GetSubtitle(string moviePath)
+        {
+            var path = System.IO.Directory.GetParent(moviePath).FullName;
+            //var path = System.IO.Path.GetFullPath(moviePath);
+            var files = System.IO.Directory.GetFiles(path);
+            var srtFiles = files.Where(f => f.Contains("srt"));
+            return srtFiles.FirstOrDefault();
         }
 
         [HttpGet]
